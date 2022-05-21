@@ -13,8 +13,8 @@ class MongoAPI:
     def __init__(self, db_address: str, db_name: str, db_username: str, db_password: str):
 
         # initialising connection to Mongo
-        self.client = pymongo.MongoClient(f"mongodb+srv://{db_username}:{db_password}@{db_address}/"
-                                          f"{db_name}?retryWrites=true&w=1")
+        self.client = pymongo.MongoClient(f"mongodb://{db_username}:{db_password}@{db_address}:27017/"
+                                          f"{db_name}")
 
         self.db_name = db_name
 
@@ -46,7 +46,7 @@ class MongoAPI:
 
         col = self.client[self.db_name][collection]
 
-        return col.find(filter=filter_dict, projection=projection_dict, sort=sort)
+        return list(col.find(filter=filter_dict, projection=projection_dict, sort=sort))
 
     def insert_one(self, collection: str, document_dict: dict = None):
         """
