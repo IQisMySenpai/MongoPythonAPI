@@ -1,5 +1,4 @@
 import pymongo
-import bson
 
 
 class MongoAPI:
@@ -73,14 +72,14 @@ class MongoAPI:
         :param document_list:  The documents to insert into the db. Needs to be a list containing doction
         :return: inserted id
         """
-        if document_list is None:
-            document_list = []
+        if document_list is None or len(document_list) < 1:
+            return
 
         col = self.client[self.db_name][collection]
 
-        result = col.insert_many(document=document_list)
+        result = col.insert_many(documents=document_list)
 
-        return result.inserted_id
+        return result.inserted_ids
 
     def update_one(self, collection: str, filter_dict: dict = None, update_dict: dict = None, upsert: bool = False):
         """
