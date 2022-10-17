@@ -15,7 +15,7 @@ class MongoAPI:
         :param db_name: name of the database
         :param db_username: username
         :param db_password: password to username
-        :param kwargs: Passed to the MongoClient.__init__ method. (i.e. tlsCAFile=certify.where())
+        :param kwargs: Passed to the MongoClient.__init__ method. (i.e. tlsCAFile=certifi.where())
         """
         # initialising connection to Mongo
         self.client = pymongo.MongoClient(f"mongodb+srv://{db_username}:{db_password}@{db_address}/"
