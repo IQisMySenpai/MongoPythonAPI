@@ -52,5 +52,14 @@ new_movie = {'name': 'First Man', 'length': 141}
 mongo.insert_one('movies', new_movie)
 ```
 
+### \[SSL: CERTIFICATE_VERIFY_FAILED\] certificate verify failed
+On some systems you might get a error that is similar to `[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed`. The following code should fix your problem.
+```python
+from mongo_api import MongoAPI
+import certifi
+
+mongo = MongoAPI('db_address', 'db_name', 'db_username', 'db_password', tlsCAFile=certifi.where())
+```
+
 ## Acknowledgements
 * [Alisot2000](https://github.com/AliSot2000)
