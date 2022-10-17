@@ -9,18 +9,26 @@ class MongoAPI:
     dummy_write: str
     dummy_update: str
 
-    def __init__(self, db_address: str, db_name: str, db_username: str, db_password: str):
-
+    def __init__(self, db_address: str, db_name: str, db_username: str, db_password: str, **kwargs):
+        """
+        :param db_address: Database Address like db.something.mongodb.net
+        :param db_name: name of the database
+        :param db_username: username
+        :param db_password: password to username
+        :param kwargs: Passed to the MongoClient.__init__ method. (i.e. tlsCAFile=certify.where())
+        """
         # initialising connection to Mongo
         self.client = pymongo.MongoClient(f"mongodb+srv://{db_username}:{db_password}@{db_address}/"
-                                          f"{db_name}")
+                                          f"{db_name}", **kwargs)
 
         self.db_name = db_name
+
+    def collection(self, collection: str):
+        return self.client[self.db_name][collection]
 
     def find_one(self, collection: str, filter_dict: dict = None, projection_dict: dict = None, sort: list = None):
         """
         Query the database.
-
         :param collection: Collection name string
         :param filter_dict: A dict specifying elements which must be present for a document to be included in the res
         :param projection_dict: A dict of field names that should be returned in the result
@@ -32,10 +40,9 @@ class MongoAPI:
 
         return col.find_one(filter=filter_dict, projection=projection_dict, sort=sort)
 
-    def find(self, collection: str, filter_dict: dict = None, projection_dict: dict = None, sort: list = None):
+    def find(self, collection: str, filter_dict: dict = None, projection_dict: dict = None, sort: list = None, skip:int = 0, limit: int = 0):
         """
         Query the database.
-
         :param collection: Collection name string
         :param filter_dict: A dict specifying elements which must be present for a document to be included in the result
         :param projection_dict: A dict of field names that should be returned in the result
@@ -45,12 +52,11 @@ class MongoAPI:
 
         col = self.client[self.db_name][collection]
 
-        return list(col.find(filter=filter_dict, projection=projection_dict, sort=sort))
+        return list(col.find(filter=filter_dict, projection=projection_dict, sort=sort).skip(skip).limit(limit))
 
     def insert_one(self, collection: str, document_dict: dict = None):
         """
         Insert a single document.
-
         :param collection: Collection name string
         :param document_dict:  The document to insert
         :return: inserted id
@@ -67,7 +73,6 @@ class MongoAPI:
     def insert(self, collection: str, document_list: list = None):
         """
         Insert an iterable of documents.
-
         :param collection: Collection name string
         :param document_list:  The documents to insert into the db. Needs to be a list containing doction
         :return: inserted id
@@ -84,7 +89,6 @@ class MongoAPI:
     def update_one(self, collection: str, filter_dict: dict = None, update_dict: dict = None, upsert: bool = False):
         """
         Update a single document matching the filter.
-
         :param collection: Collection name string
         :param filter_dict: A dict specifying elements which must be present for a document to be included in the result
         :param update_dict: A dict with the modifications to apply
@@ -101,7 +105,6 @@ class MongoAPI:
     def update(self, collection: str, filter_dict: dict = None, update_dict: dict = None, upsert: bool = False):
         """
         Update one or more documents that match the filter.
-
         :param collection: Collection name string
         :param filter_dict: A dict specifying elements which must be present for a document to be included in the result
         :param update_dict: A dict with the modifications to apply
@@ -118,7 +121,6 @@ class MongoAPI:
     def delete_one(self, collection: str, filter_dict: dict = None):
         """
         Delete a single document matching the filter.
-
         :param collection: Collection name string
         :param filter_dict A dict specifying elements which must be present for a document to be included in the result
         :return: deleted count
@@ -133,7 +135,6 @@ class MongoAPI:
     def delete(self, collection: str, filter_dict: dict = None):
         """
         Delete one or more documents matching the filter.
-
         :param collection: Collection name string
         :param filter_dict: A dict specifying elements which must be present for a document to be included in the result
         :return: deleted count
@@ -148,7 +149,6 @@ class MongoAPI:
     def count(self, collection: str, filter_dict: dict = None):
         """
         Count the number of documents in this collection.
-
         :param collection: Collection name string
         :param filter_dict: A dict specifying elements which must be present for a document to be included in the result
         :return:
