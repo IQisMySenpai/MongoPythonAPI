@@ -13,6 +13,8 @@
 
 The first version of this code was written in our [Discord Bot](https://github.com/IQisMySenpai/RedditTopOfBot). As I am starting to make changes to the API I wanted to track them seperately.
 
+The code specifies a simple wrapper around the `pymongo`. The wrapper operates under the assumption that only one `database` is accessed. It also simplifies the handling of `collections` making it a parameter of the function instead of having to access them with the `__get_item__` operation.
+
 ### Built With
 
 * [Python 3.9](www.python.org)
