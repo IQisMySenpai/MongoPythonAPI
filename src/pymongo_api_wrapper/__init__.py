@@ -1,2 +1,2 @@
 from pymongo_api_wrapper.async_mongo_api import AsyncMongoAPI
-from pymongo_api_wrapper.sync_mongo_api import string_to_object_id, object_id_to_string
+from pymongo_api_wrapper.sync_mongo_api import string_to_object_id, object_id_to_string, MongoAPI
