@@ -35,8 +35,9 @@ The API supports following actions:
 Here are some examples how you can use the api. Further documentation can be found in the docstrings.
 
 ### Initialization of the API
+
 ```python
-from mongo_api import MongoAPI
+from sync_mongo_api import MongoAPI
 
 mongo = MongoAPI('db_address', 'db_name', 'db_username', 'db_password')
 ```
@@ -56,8 +57,9 @@ mongo.insert_one('movies', new_movie)
 
 ### \[SSL: CERTIFICATE_VERIFY_FAILED\] certificate verify failed
 On some systems you might get a error that is similar to `[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed`. The following code should fix your problem.
+
 ```python
-from mongo_api import MongoAPI
+from sync_mongo_api import MongoAPI
 import certifi
 
 mongo = MongoAPI('db_address', 'db_name', 'db_username', 'db_password', tlsCAFile=certifi.where())
