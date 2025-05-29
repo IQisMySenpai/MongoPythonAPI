@@ -1,17 +1,14 @@
 import warnings
+from typing import Union, Optional
 
-import motor.motor_asyncio as maio
-import pymongo.server_api as sapi
-from typing import Union
 import pymongo
+from bson import ObjectId
 
-
-cur = maio.AsyncIOMotorClient
 warnings.warn("The AsyncMongoAPI code is untested and may have bugs.")
 
 
 class AsyncMongoAPI:
-    client: maio.AsyncIOMotorClient
+    client: pymongo.AsyncMongoClient
     db_name: str
 
     def close(self):
@@ -22,7 +19,8 @@ class AsyncMongoAPI:
         """
         self.client.close()
 
-    def __init__(self, db_address: str,
+    def __init__(self,
+                 db_address: str,
                  db_name: str,
                  db_username: str,
                  db_password: str,
@@ -40,9 +38,8 @@ class AsyncMongoAPI:
             raise ValueError("service must be either 'mongodb+srv' or 'mongodb'")
 
         # initialising connection to Mongo
-        self.client = maio.AsyncIOMotorClient(f"{service}://{db_username}:{db_password}@{db_address}/"
-                                              f"{db_name}?retryWrites=true&w=majority",
-                                              server_api=sapi.ServerApi('1'), **kwargs)
+        self.client = pymongo.AsyncMongoClient(f"{service}://{db_username}:{db_password}@{db_address}/"
+                                               f"{db_name}?retryWrites=true&w=majority", **kwargs)
 
         self.db_name = db_name
 
@@ -56,7 +53,11 @@ class AsyncMongoAPI:
         """
         return self.client[self.db_name][collection]
 
-    async def find_one(self, collection: str, filter_dict: dict = None, projection_dict: dict = None, sort: list = None):
+    async def find_one(self,
+                       collection: str,
+                       filter_dict: dict = None,
+                       projection_dict: dict = None,
+                       sort: list = None) -> Optional[dict]:
         """
         Query the database.
 
@@ -72,8 +73,13 @@ class AsyncMongoAPI:
 
         return await col.find_one(filter=filter_dict, projection=projection_dict, sort=sort)
 
-    async def find(self, collection: str, filter_dict: dict = None, projection_dict: dict = None, sort: list = None,
-                    skip:int = 0, limit: int = 0):
+    async def find(self,
+                   collection: str,
+                   filter_dict: dict = None,
+                   projection_dict: dict = None,
+                   sort: list = None,
+                   skip:int = 0,
+                   limit: int = 0) -> list[dict]:
         """
         Query the database.
 
@@ -93,7 +99,9 @@ class AsyncMongoAPI:
 
         return [e async for e in a_cur]
 
-    async def insert_one(self, collection: str, document_dict: dict = None):
+    async def insert_one(self,
+                         collection: str,
+                         document_dict: dict = None) -> ObjectId:
         """
         Insert a single document.
 
@@ -111,7 +119,9 @@ class AsyncMongoAPI:
 
         return result.inserted_id
 
-    async def insert(self, collection: str, document_list: list = None):
+    async def insert(self,
+                     collection: str,
+                     document_list: list = None) -> list[ObjectId]:
         """
         Insert an iterable of documents.
 
@@ -121,7 +131,7 @@ class AsyncMongoAPI:
         :return: inserted id
         """
         if document_list is None or len(document_list) < 1:
-            return
+            return []
 
         col = self.collection(collection)
 
@@ -129,7 +139,11 @@ class AsyncMongoAPI:
 
         return result.inserted_ids
 
-    async def update_one(self, collection: str, filter_dict: dict = None, update_dict: dict | list = None, upsert: bool = False):
+    async def update_one(self,
+                         collection: str,
+                         filter_dict: dict = None,
+                         update_dict: dict | list = None,
+                         upsert: bool = False) -> int:
         """
         Update a single document matching the filter.
 
@@ -147,7 +161,11 @@ class AsyncMongoAPI:
 
         return result.modified_count
 
-    async def update(self, collection: str, filter_dict: dict = None, update_dict: Union[list, dict] = None, upsert: bool = False):
+    async def update(self,
+                     collection: str,
+                     filter_dict: dict = None,
+                     update_dict: Union[list, dict] = None,
+                     upsert: bool = False) -> int:
         """
         Update one or more documents that match the filter.
 
@@ -165,7 +183,9 @@ class AsyncMongoAPI:
 
         return result.modified_count
 
-    async def delete_one(self, collection: str, filter_dict: dict = None):
+    async def delete_one(self,
+                         collection: str,
+                         filter_dict: dict = None) -> int:
         """
         Delete a single document matching the filter.
 
@@ -181,7 +201,9 @@ class AsyncMongoAPI:
 
         return result.deleted_count
 
-    async def delete(self, collection: str, filter_dict: dict = None):
+    async def delete(self,
+                     collection: str,
+                     filter_dict: dict = None) -> int:
         """
         Delete one or more documents matching the filter.
 
@@ -197,7 +219,9 @@ class AsyncMongoAPI:
 
         return result.deleted_count
 
-    async def count(self, collection: str, filter_dict: dict = None):
+    async def count(self,
+                    collection: str,
+                    filter_dict: dict = None) -> int:
         """
         Count the number of documents in this collection.
 
@@ -212,7 +236,9 @@ class AsyncMongoAPI:
         col = self.collection(collection)
         return await col.count_documents(filter=filter_dict)
 
-    async def aggregate(self, collection: str, pipeline: list = None):
+    async def aggregate(self,
+                        collection: str,
+                        pipeline: list = None):
         """
         Perform an aggregation using the aggregation framework on this collection.
 
