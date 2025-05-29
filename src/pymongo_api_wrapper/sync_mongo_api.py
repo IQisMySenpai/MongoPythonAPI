@@ -130,7 +130,7 @@ class MongoAPI:
         :return: inserted id
         """
         if document_list is None or len(document_list) < 1:
-            return
+            return None
 
         col = self.client[self.db_name][collection]
 
