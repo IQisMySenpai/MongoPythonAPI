@@ -1,9 +1,11 @@
 from typing import Union
+from warnings import deprecated
 
 import bson
 import pymongo
 
 
+@deprecated
 def string_to_object_id(id_string: str):
     """
     Convert a string to a mongo object id
@@ -15,6 +17,7 @@ def string_to_object_id(id_string: str):
     return bson.ObjectId(id_string)
 
 
+@deprecated
 def object_id_to_string(id_object: bson.ObjectId):
     """
     Convert a mongo object id to a string
