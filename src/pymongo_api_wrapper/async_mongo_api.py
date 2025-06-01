@@ -251,8 +251,8 @@ class AsyncMongoAPI:
             pipeline = []
 
         col = self.collection(collection)
-        a_cur = col.aggregate(pipeline=pipeline)
-        return [e async for e in a_cur]
+        a_cur = await col.aggregate(pipeline=pipeline)
+        return await a_cur.to_list()
 
     async def find_one_and_update(self,
                             collection: str,
